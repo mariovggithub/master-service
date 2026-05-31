@@ -3,16 +3,21 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
 
   master-db:
-    image: postgres
+    image: postgres:15
     environment:
       POSTGRES_DB: master_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
 
   master-service:
     build: .
+    image: master-service:1.0
     depends_on:
       - rabbitmq
       - master-db
