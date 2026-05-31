@@ -1,0 +1,18 @@
+# version: "2"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+
+  master-db:
+    image: postgres
+    environment:
+      POSTGRES_DB: master_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  master-service:
+    build: .
+    depends_on:
+      - rabbitmq
+      - master-db
