@@ -14,6 +14,8 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   master-service:
     build: .
@@ -21,3 +23,6 @@ services:
     depends_on:
       - rabbitmq
       - master-db
+
+volumes:
+  pgdata:
