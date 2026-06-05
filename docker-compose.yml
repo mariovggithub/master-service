@@ -48,6 +48,8 @@ services:
       - master-service
     volumes:
       - ./gateway:/app
+    networks:
+      - sia_net
     restart: always
 
 volumes:
