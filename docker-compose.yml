@@ -2,11 +2,16 @@
 
 services:
   rabbitmq:
+    container_name: ms-rabbitmq
     image: rabbitmq:3-management
     ports:
       - "15672:15672"
+    networks:
+      - sia_net
+    restart: always
 
   master-db:
+    container_name: ms-master-db
     image: postgres:15
     environment:
       POSTGRES_DB: master_db
@@ -16,8 +21,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - sia_net
+    restart: always
 
   master-service:
+    container_name: ms-master-service
     build: .
     image: master-service:1.0
     depends_on:
@@ -27,8 +36,10 @@ services:
       - .:/app
     environment:
       - NAMEKO_CONFIG=/app/config.yml
+    restart: always
   
-  api-gateway:
+  gateway:
+    container_name: ms-gateway
     build: ./gateway
     ports:
       - "8000:8000"
@@ -36,7 +47,13 @@ services:
       - rabbitmq
       - master-service
     volumes:
-      - ./gateway:/app 
+      - ./gateway:/app
+    restart: always
 
 volumes:
   pgdata:
+
+networks:
+  sia_net:
+    name: sia_network
+    external: true
