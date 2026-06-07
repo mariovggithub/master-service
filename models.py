@@ -12,3 +12,16 @@ class UnitAkademik(Base):
     parent_id = Column(Integer, ForeignKey("academic_units.unit_id"), nullable=True)
 
     parent = relationship("UnitAkademik", remote_side=[unit_id])
+
+class Lecturer(Base):
+    __tablename__ = "lecturers"
+
+    lecturer_id = Column(String, primary_key=True)
+    nip = Column(String, unique=True, nullable=False)
+    lecturer_name = Column(String, nullable=False)
+    lecturer_email = Column(String, nullable=False)
+    lecturer_password = Column(String, nullable=False)
+    lecturer_status = Column(String, nullable=False)
+    unit_id = Column(String, ForeignKey("academic_units.unit_id"))
+
+    unit = relationship("UnitAkademik")

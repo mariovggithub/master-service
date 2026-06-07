@@ -8,6 +8,7 @@ class GatewayService:
 
     master_service = RpcProxy("master_service")
 
+    # UNIT AKADEMIK
     @http('POST', '/master/units')
     def create_unit(self, request):
         payload = json.loads(request.get_data(as_text=True))
@@ -45,3 +46,46 @@ class GatewayService:
     def delete_unit(self, request, unit_id):
         result = self.master_service.delete_unit(unit_id)
         return Response(json.dumps(result), mimetype='/application/json')
+    
+    # DOSEN
+    @http('POST', '/master/lecturers')
+    def create_lecturer(self, request):
+        payload = json.loads(request.get_data(as_text=True))
+        result = self.master_service.create_lecturer(
+            nip=payload.get('nip'),
+            name=payload.get('name'),
+            email=payload.get('email'),
+            password=payload.get('password'),
+            status=payload.get('status'),
+            unit_id=payload.get('unit_id')
+        )
+        return Response(json.dumps(result), mimetype='application/json')
+    
+    @http('GET', '/master/lecturers')
+    def get_all_lecturers(self, request):
+        result = self.master_service.get_all_lecturers()
+        return Response(json.dumps(result), mimetype='application/json')
+    
+    @http('GET', '/master/lecturers/<int:lecturer_id>')
+    def get_lecturer_by_id(self, request, lecturer_id):
+        result = self.master_service.get_lecturer_by_id(lecturer_id)
+        return Response(json.dumps(result), mimetype='application/json')
+    
+    @http('PUT', '/master/lecturer/<int:lecturer_id>')
+    def update_lecturer(self, request, lecturer_id):
+        payload = json.loads(request.get_data(as_text=True))
+        result = self.master_service.update_lecturer(
+            lecturer_id=lecturer_id,
+            nip=payload.get('nip'),
+            name=payload.get('name'),
+            email=payload.get('email'),
+            password=payload.get('password'),
+            status=payload.get('status'),
+            unit_id=payload.get('unit_id')
+        )
+        return Response(json.dumps(result), mimetype='application/json')
+    
+    @http('DELETE', 'master/lecturers/<int:lecturer_id>')
+    def delete_lecturer(self, request, lecturer_id):
+        result = self.master_service.delete_lecturer(lecturer_id)
+        return Response(json.dumps(result), mimetype='application/json')

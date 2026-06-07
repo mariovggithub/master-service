@@ -1,7 +1,7 @@
 from nameko.rpc import rpc
 from database import SessionLocal
 
-from models import UnitAkademik
+from models import UnitAkademik, Lecturer
 
 class MasterService:
     name = "master_service"
@@ -95,5 +95,110 @@ class MasterService:
         except Exception as e:
             db.rollback()
             return {"status": "error", "message": "Gagal menghapus, mungkin ada data turunan yang mengikat. " + str(e)}
+        finally:
+            db.close()
+
+    # DOSEN
+    @rpc
+    def create_lecturer(self, nip, name, email, password, status, unit_id):
+        db = SessionLocal()
+        try:
+            lecturer = Lecturer(
+                nip=nip,
+                lecturer_name=name,
+                lecturer_password=password,
+                lecturer_status=status,
+                unit_id=unit_id
+            )
+            db.add(lecturer)
+            db.commit()
+            db.refresh(lecturer)
+
+            return{"status": "success", "id": lecturer.lecturer_id, "name": lecturer.lecturer_name}
+        except Exception as e:
+            db.rollback()
+            return {"status": "error", "message": str(e)}
+        finally:
+            db.close()
+    
+    @rpc
+    def get_all_lecturers(self):
+        db = SessionLocal()
+        try:
+            lecturers = db.query(Lecturer).all()
+            return [
+                {
+                    "id": l.lecturer_id,
+                    "nip": l.nip,
+                    "name": l.lecturer_name,
+                    "email": l.lecturer_email,
+                    "status": l.lecturer_status,
+                    "unit_id": l.unit_id
+                }
+                for l in lecturers
+            ]
+        finally:
+            db.close()
+    
+
+    @rpc
+    def get_lecturer_by_id(self, lecturer_id):
+        db = SessionLocal()
+        try:
+            lecturer = db.query(Lecturer).filter(Lecturer.lecturer_id == lecturer_id).first()
+            if not lecturer:
+                return {"status": "error", "message": "Dosen tidak ditemukan"}
+            
+            return {
+                "status": "success",
+                "data": {
+                    "id": lecturer.lecturer_id,
+                    "nip": lecturer.nip,
+                    "name": lecturer.lecturer_name,
+                    "email": lecturer.lecturer_email,
+                    "status": lecturer.lecturer_status,
+                    "unit_id": lecturer.unit_id
+                }
+            }
+        finally:
+            db.close()
+
+    @rpc
+    def update_lecturer(self, lecturer_id, nip=None, name=None, email=None, password=None, status=None, unit_id=None):
+        db = SessionLocal()
+        try:
+            lecturer = db.query(Lecturer).filter(Lecturer.lecturer_id == lecturer_id).first()
+            if not lecturer:
+                return {"status": "error", "message": "Dosen tidak ditemukan"}
+            
+            if nip: lecturer.nip = nip
+            if name: lecturer.lecturer_name = name,
+            if email: lecturer.lecturer_email = email,
+            if password: lecturer.lecturer_password = password,
+            if status: lecturer.lecturer_status = status
+            if unit_id is not None: lecturer.unit_id = unit_id
+
+            db.commit()
+            return {"status": "success", "message": "Data dosen berhasil diupdate"}
+        except Exception as e:
+            db.rollback()
+            return {"status": "error", "message": str(e)}
+        finally:
+            db.close()
+
+    @rpc
+    def delete_lecturer(self, lecturer_id):
+        db = SessionLocal()
+        try:
+            lecturer = db.query(Lecturer).filter(Lecturer.lecturer_id == lecturer_id).first()
+            if not lecturer:
+                return {"status": "error", "message": "Dosen tidak ditemukan"}
+            
+            db.delete(lecturer)
+            db.commit()
+            return {"status": "success", "message": f"Dosen {lecturer.lecturer_name} berhasil dihapus"}
+        except Exception as e:
+            db.rollback()
+            return {"status": "error", "message": "Gagal menghapus dosen. " +str(e)}
         finally:
             db.close()
