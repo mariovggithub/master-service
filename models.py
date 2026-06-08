@@ -24,7 +24,7 @@ class Dosen(Base):
     lecturer_email = Column(String, nullable=False)
     lecturer_password = Column(String, nullable=False)
     lecturer_status = Column(String, nullable=False)
-    unit_id = Column(String, ForeignKey("academic_units.unit_id"))
+    unit_id = Column(Integer, ForeignKey("academic_units.unit_id"))
 
     unit = relationship("UnitAkademik")
 
