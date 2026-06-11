@@ -373,7 +373,7 @@ class MasterService:
     def get_all_students(self):
         db = SessionLocal()
         try:
-            students = db.query(students).all()
+            students = db.query(Mahasiswa).all()
             return [
                 {
                     "id": s.student_id,

@@ -8,7 +8,7 @@ class GatewayService:
 
     master_service = RpcProxy("master_service")
 
-    # UNIT AKADEMIK
+    # UNIT AKADEMIK ✅
     @http('POST', '/master/units')
     def create_unit(self, request):
         payload = json.loads(request.get_data(as_text=True))
@@ -47,7 +47,7 @@ class GatewayService:
         result = self.master_service.delete_unit(unit_id)
         return Response(json.dumps(result), mimetype='/application/json')
     
-    # DOSEN
+    # DOSEN ✅
     @http('POST', '/master/lecturers')
     def create_lecturer(self, request):
         payload = json.loads(request.get_data(as_text=True))
