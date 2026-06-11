@@ -76,7 +76,7 @@ class GatewayService:
         result = self.master_service.get_lecturers_by_unit(unit_id)
         return Response(json.dumps(result), mimetype='application/json')
     
-    @http('PUT', '/master/lecturer/<int:lecturer_id>')
+    @http('PUT', '/master/lecturers/<int:lecturer_id>')
     def update_lecturer(self, request, lecturer_id):
         payload = json.loads(request.get_data(as_text=True))
         result = self.master_service.update_lecturer(
