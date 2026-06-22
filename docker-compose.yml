@@ -98,6 +98,7 @@ volumes:
   pgdata:
     external: true
     name: master-service_pgdata
+  penawaran_pgdata:
 
 networks:
   sia_net:
