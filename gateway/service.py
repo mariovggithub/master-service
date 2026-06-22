@@ -9,7 +9,7 @@ class GatewayService:
     name = "gateway"
 
     master_service = RpcProxy("master_service")
-    penawaran_service = RpcProxy("penawaran_kelas")
+    penawaran_kelas = RpcProxy("penawaran_kelas")
 
     # LOGIN
     @http('POST', '/login')
