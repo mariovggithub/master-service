@@ -27,7 +27,7 @@ services:
 
   master-service:
     container_name: ms-master-service
-    build: .
+    build: ./master-service
     image: master-service:1.0
     depends_on:
       - rabbitmq

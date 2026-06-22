@@ -35,32 +35,32 @@ class GatewayService:
         except jwt.InvalidTokenError:
             return None, {"status": "error", "message": "Tiket palsu!"}
 
-    def check_access(request, allowed_types=None, allowed_roles=None):
-        # allowed_types: dosen, mahasiswa
-        # allowed_roles: admin, kaprodi, sekprodi, dekan, wadek, dll
+    # def check_access(request, allowed_types=None, allowed_roles=None):
+    #     # allowed_types: dosen, mahasiswa
+    #     # allowed_roles: admin, kaprodi, sekprodi, dekan, wadek, dll
 
-        payload, error: check_jwt(request)
-        if error:
-            return None, error
+    #     payload, error: check_jwt(request)
+    #     if error:
+    #         return None, error
         
-        user_type = payload.get("type")
-        user_roles = payload.get("roles", [])
+    #     user_type = payload.get("type")
+    #     user_roles = payload.get("roles", [])
 
-        if allowed_types and user_type not in allowed_types:
-            return None, {
-                "status": "error",
-                "message": f"Akses Ditolak! Fitur ini tidak untuk {user_type}"
-            }
+    #     if allowed_types and user_type not in allowed_types:
+    #         return None, {
+    #             "status": "error",
+    #             "message": f"Akses Ditolak! Fitur ini tidak untuk {user_type}"
+    #         }
         
-        if allowed_roles:
-            has_access = any(role in allowed_roles for role in user_roles)
-            if not has_access:
-                return None, {
-                    "status": "error",
-                    "message": f"Akses Ditolak! Anda butuh role {allowed_roles} untuk mengakses ini."
-                }
+    #     if allowed_roles:
+    #         has_access = any(role in allowed_roles for role in user_roles)
+    #         if not has_access:
+    #             return None, {
+    #                 "status": "error",
+    #                 "message": f"Akses Ditolak! Anda butuh role {allowed_roles} untuk mengakses ini."
+    #             }
             
-        return payload, None
+    #     return payload, None
 
     # UNIT AKADEMIK ✅
     @http('POST', '/master/units')
