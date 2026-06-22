@@ -33,7 +33,7 @@ services:
       - rabbitmq
       - master-db
     volumes:
-      - .:/app
+      - ./master-service:/app
     environment:
       - NAMEKO_CONFIG=/app/config.yml
       - JWT_SECRET_KEY=abl_soa_finalProject
