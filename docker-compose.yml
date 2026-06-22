@@ -72,7 +72,45 @@ services:
       DB_USER: penawaran_user
       DB_PASS: penawaran_password
       DB_NAME: penawaran_db
+      NAMEKO_CONFIG: /app/config.yml
+      JWT_SECRET_KEY: abl_soa_finalProject
     command: sh -c "sleep 10 && python write_config.py && python create_tables.py && nameko run --config runtime_config.yaml penawaran_kelas.service"
+    networks:
+      - sia_net
+    restart: always
+
+  # Perwalian
+  perwalian-db:
+    container_name: ms-perwalian-db
+    image: postgres:15
+    environment:
+      POSTGRES_DB: perwalian_db
+      POSTGRES_USER: perwalian_user
+      POSTGRES_PASSWORD: perwalian_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - perwalian_pgdata:/var/lib/postgresql/data
+    networks:
+      - sia_net
+    restart: always
+    
+  perwalian-service:
+    container_name: ms-perwalian-service
+    build: ./perwalian-service
+    depends_on:
+      - rabbitmq
+      - perwalian-db
+    environment:
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: guest
+      RABBIT_PASS: guest
+      DB_HOST: perwalian-db
+      DB_USER: perwalian_user
+      DB_PASS: perwalian_password
+      DB_NAME: perwalian_db
+      NAMEKO_CONFIG: /app/config.yml
+      JWT_SECRET_KEY: abl_soa_finalProject
     networks:
       - sia_net
     restart: always
@@ -86,6 +124,7 @@ services:
       - rabbitmq
       - master-service
       - penawaran-service
+      - perwalian-service
     volumes:
       - ./gateway:/app
     environment:
@@ -99,6 +138,7 @@ volumes:
     external: true
     name: master-service_pgdata
   penawaran_pgdata:
+  perwalian_pgdata:
 
 networks:
   sia_net:
