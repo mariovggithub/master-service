@@ -1,0 +1,71 @@
+version: '3.8'
+
+name: transkrip-microservice
+
+services:
+
+  transkrip-db:
+    container_name: ms-transkrip-db
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE:      transkrip_db
+      MYSQL_USER:          transkrip_user
+      MYSQL_PASSWORD:      transkrip_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - transkrip_mysql_data:/var/lib/mysql
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=mysql_native_password
+    networks:
+      - sia_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "transkrip_user", "--password=transkrip_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: always
+
+  db-init:
+    container_name: ms-transkrip-db-init
+    build: .
+    command: python database.py
+    depends_on:
+      transkrip-db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=mysql+pymysql://transkrip_user:transkrip_pass@transkrip-db:3306/transkrip_db?charset=utf8mb4
+    networks:
+      - sia_net
+    restart: on-failure
+
+  transkrip-service:
+    container_name: ms-transkrip-service
+    build: .
+    depends_on:
+      transkrip-db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - sia_net
+    restart: always
+
+volumes:
+  transkrip_mysql_data:
+
+networks:
+  sia_net:
+    name: sia_network
+    external: true
