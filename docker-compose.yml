@@ -115,6 +115,44 @@ services:
     networks:
       - sia_net
     restart: always
+
+  # Transkrip
+  transkrip-db:
+    container_name: ms-transkrip-db
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: transkrip_db
+      MYSQL_USER: transkrip_user
+      MYSQL_PASSWORD: transkrip_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - transkrip_data:/var/lib/mysql
+    networks:
+      - sia_net
+    restart: always
+
+  transkrip-service:
+    container_name: ms-transkrip-service
+    build: ./Transkrip_Service
+    depends_on:
+      - rabbitmq
+      - transkrip-db
+    environment:
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: guest
+      RABBIT_PASS: guest
+      DB_HOST: transkrip-db
+      DB_USER: transkrip_user
+      DB_PASS: transkrip_pass
+      DB_NAME: transkrip_db
+      NAMEKO_CONFIG: /app/config.yml
+      JWT_SECRET_KEY: abl_soa_finalProject
+    command: sh -c "sleep 15 && python database.py && nameko run --config config.yml Transkrip.service"
+    networks:
+      - sia_net
+    restart: always
   
   gateway:
     container_name: ms-gateway
@@ -126,6 +164,7 @@ services:
       - master-service
       - penawaran-service
       - perwalian-service
+      - transkrip-service
     volumes:
       - ./gateway:/app
     environment:
@@ -140,6 +179,7 @@ volumes:
     name: master-service_pgdata
   penawaran_pgdata:
   perwalian_pgdata:
+  transkrip_data:
 
 networks:
   sia_net:
