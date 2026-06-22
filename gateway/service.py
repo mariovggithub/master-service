@@ -18,6 +18,7 @@ class GatewayService:
 
     master_service = RpcProxy("master_service")
     penawaran_kelas = RpcProxy("penawaran_kelas")
+    perwalian_service = RpcProxy("perwalian_service")
 
     # LOGIN
     @http('POST', '/login')
