@@ -10,6 +10,7 @@ services:
       - sia_net
     restart: always
 
+  # Master
   master-db:
     container_name: ms-master-db
     image: postgres:15
@@ -40,6 +41,41 @@ services:
     networks:
       - sia_net
     restart: always
+
+  # Penawaran Kelas
+  penawaran-db:
+    container_name: ms-penawaran-db
+    image: postgres:15
+    environment:
+      POSTGRES_DB: penawaran_db
+      POSTGRES_USER: penawaran_user
+      POSTGRES_PASSWORD: penawaran_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - penawaran_pgdata:/var/lib/postgresql/data
+    networks:
+      - sia_net
+    restart: always
+
+  penawaran-service:
+    container_name: ms-penawaran-service
+    build: ./penawaran_kelas_service
+    depends_on:
+      - rabbitmq
+      - penawaran-db
+    environment:
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: guest
+      RABBIT_PASS: guest
+      DB_HOST: penawaran-db
+      DB_USER: penawaran_user
+      DB_PASS: penawaran_password
+      DB_NAME: penawaran_db
+    command: sh -c "sleep 10 && python write_config.py && python create_tables.py && nameko run --config runtime_config.yaml penawaran_kelas.service"
+    networks:
+      - sia_net
+    restart: always
   
   gateway:
     container_name: ms-gateway
@@ -49,6 +85,7 @@ services:
     depends_on:
       - rabbitmq
       - master-service
+      - penawaran-service
     volumes:
       - ./gateway:/app
     environment:
