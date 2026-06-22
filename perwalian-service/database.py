@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import *
 
-DATABASE_URL = "postgresql://postgres:password@perwalian-db:5434/perwalian_db"
+DATABASE_URL = "postgresql://postgres:password@perwalian-db:5432/perwalian_db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
