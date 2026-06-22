@@ -65,9 +65,9 @@ class GatewayService:
     # UNIT AKADEMIK ✅
     @http('POST', '/master/units')
     def create_unit(self, request):
-        jwt_payload, error = self.check_jwt(request)
-        if error:
-            return Response(json.dumps(error), status=401, mimetype='application/json')
+        # jwt_payload, error = self.check_jwt(request)
+        # if error:
+        #     return Response(json.dumps(error), status=401, mimetype='application/json')
         
         body_payload = json.loads(request.get_data(as_text=True))
         result = self.master_service.create_unit(
@@ -79,9 +79,9 @@ class GatewayService:
     
     @http('GET', '/master/units')
     def get_all_units(self, request):
-        jwt_payload, error = self.check_jwt(request)
-        if error:
-            return Response(json.dumps(error), status=401, mimetype='application/json')
+        # jwt_payload, error = self.check_jwt(request)
+        # if error:
+        #     return Response(json.dumps(error), status=401, mimetype='application/json')
         result = self.master_service.get_all_units()
         return Response(json.dumps(result), mimetype='application/json')
     
@@ -119,9 +119,9 @@ class GatewayService:
     # DOSEN ✅
     @http('POST', '/master/lecturers')
     def create_lecturer(self, request):
-        jwt_payload, error = self.check_jwt(request)
-        if error:
-            return Response(json.dumps(error), status=401, mimetype='application/json')
+        # jwt_payload, error = self.check_jwt(request)
+        # if error:
+        #     return Response(json.dumps(error), status=401, mimetype='application/json')
         
         body_payload = json.loads(request.get_data(as_text=True))
         result = self.master_service.create_lecturer(
@@ -136,9 +136,9 @@ class GatewayService:
     
     @http('GET', '/master/lecturers')
     def get_all_lecturers(self, request):
-        jwt_payload, error = self.check_jwt(request)
-        if error:
-            return Response(json.dumps(error), status=401, mimetype='application/json')
+        # jwt_payload, error = self.check_jwt(request)
+        # if error:
+        #     return Response(json.dumps(error), status=401, mimetype='application/json')
         result = self.master_service.get_all_lecturers()
         return Response(json.dumps(result), mimetype='application/json')
     
